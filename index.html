@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Let's Talk - A Online Chatting App</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://kit.fontawesome.com/7c1f920b3b.js" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+  <div class="logo">
+    <img src="logo.png" alt="loading">
+    <h3>WeTalk</h3>
+  </div>
+  <div class="container">
+    <!-- <div class="left">Hello Asu This Side !</div>
+    <div class="right">Hey Asu ! How Are You?</div> -->
+  </div>
+  <div class="send">
+    <form action="#" id="send-msg">
+      <input type="text" name="MyMsg" id="MyMsg">
+      <button class="btn" type="submit" name="submit" id="submit"><i class="fa-solid fa-paper-plane"></i></button>
+    </form>
+  </div>
+  <script src="socket.io/socket.io.js"></script>
+  <script>
+
+    const socket = io();
+
+    const from = document.getElementById('send-msg')
+    const MsgInp = document.getElementById('MyMsg')
+    const MsgContainer = document.querySelector('.container')
+
+    var audio = new Audio('tun.mp3')
+
+    const append = (msg, posi) => {
+      const msgEle = document.createElement('div')
+      msgEle.innerText = msg
+      msgEle.classList.add('msg')
+      msgEle.classList.add(posi)
+      MsgContainer.append(msgEle)
+      audio.play();
+    }
+
+    from.addEventListener('submit',(e)=>{
+       e.preventDefault();
+       const msg = MsgInp.value;
+       append(`you : ${msg}` , 'right')
+       socket.emit('send' , msg)
+       MsgInp.value = ''
+    })
+
+
+    const name = prompt("Enter Your Name :")
+    socket.emit('new-user-joined', name)
+
+
+    socket.on('user-joined', name => {
+      append(`${name} joined the chat`, 'center')
+    })
+
+    socket.on('recieve', data => {
+      append(`${data.name} : ${data.msg}`, 'left')
+    })
+    socket.on('i',name =>{
+    append(`${name} Left The Chat ` , 'center')
+    })
+  
+  </script>
+</body>
+
+</html>
